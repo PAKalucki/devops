@@ -1,0 +1,16 @@
+[Unit]
+Description=jenkins slave Service
+After=network.target
+
+[Service]
+Type=forking
+User=root
+ExecStart=/bin/bash /etc/init.d/jenkins-slave.sh start
+ExecReload=/bin/bash /etc/init.d/jenkins-slave.sh restart
+ExecStop=/bin/bash /etc/init.d/jenkins-slave.sh stop
+Restart=always
+RestartSec=60
+
+[Install]
+
+WantedBy=multi-user.target
