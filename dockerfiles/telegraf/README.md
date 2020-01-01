@@ -1,0 +1,1 @@
+docker container run -d -e HOST_PROC=/host/proc -v /proc:/host/proc:ro -v /sys/class/thermal/thermal_zone0/temp:/opt/temp:ro --net=container:influxdb --restart=always --name=telegraf pakalucki/telegraf:latest
