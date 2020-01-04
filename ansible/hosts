@@ -1,0 +1,5 @@
+[control]
+localhost ansible_connection=local
+
+[openwrt]
+openwrt ansible_host=192.168.2.1 ansible_user=root ansible_password="{{ vault_openwrt_password }}"
