@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  nordvpn:
+    container_name: nordvpn
+    image: pakalucki/nordvpn:latest_armv7
+    ports: 
+      - "1194:1194/udp"
+    environment:
+      username: pakalucki@gmail.com
+      password: ${NORDVPN_PASSWORD}
+      protocol: udp
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    cap_add:
+      - NET_ADMIN
+
+  portainer:
+  samba:
+  transmission:
+  influxdb:
+  grafana:
+  telegraf:
+  domoticz:
+  proxy:
