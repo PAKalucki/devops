@@ -8,10 +8,11 @@ services:
       - "445:445/tcp"
     volumes:
       - /mnt/natec:/mount
+    restart: unless-stopped
     command: "-s public;/mount/public;yes;no"
 
   nordvpn:
-    image: pakalucki/nordvpn
+    image: pakalucki/nordvpn:latest
     ports:
       - "1194:1194/udp"
     environment:
@@ -22,16 +23,18 @@ services:
       - "/dev/net/tun"
     cap_add:
       - NET_ADMIN
+    restart: unless-stopped
     command: random
 
   proxy:
-    image: pakalucki/proxy
+    image: pakalucki/proxy:latest
     ports:
       - "8443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     links:
-      - "transmission"
+      - "nordvpn:transmission"
+    restart: unless-stopped
     depends_on:
       - "transmission"
 
@@ -41,11 +44,11 @@ services:
       - /config
       - /watch
       - /mnt/natec/public/torrent/downloads:/downloads
-    networks:
-      - service:nordvpn
+    network_mode: "service:nordvpn"
     environment:
       TZ: "Europe/Warsaw"
       USER: ${TRANSMISSION_USER}
       PASS: ${TRANSMISSION_PASS}
+    restart: unless-stopped
     depends_on:
       - "nordvpn"
