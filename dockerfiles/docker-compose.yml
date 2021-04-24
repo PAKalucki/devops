@@ -102,6 +102,4 @@ services:
         - /mnt/natec/public/youtube/video:/app/video
         - /mnt/natec/public/youtube/subscriptions:/app/subscriptions
         - /mnt/natec/public/youtube/users:/app/users
-    ports:
-        - "8998:17442"
     image: tzahi12345/youtubedl-material:nightly
