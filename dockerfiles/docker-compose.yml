@@ -70,12 +70,12 @@ services:
   #       - grafana_storage:/var/lib/grafana
   #   restart: unless-stopped
 
-  portainer:
-    image: portainer/portainer-ce:alpine
-    volumes:
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-        - /data
-    restart: unless-stopped
+  # portainer:
+  #   image: portainer/portainer-ce:alpine
+  #   volumes:
+  #       - /var/run/docker.sock:/var/run/docker.sock:ro
+  #       - /data
+  #   restart: unless-stopped
 
   proxy:
     image: pakalucki/proxy:latest
@@ -86,11 +86,11 @@ services:
     links:
       - "nordvpn:transmission"
       - portainer
+      - ytdl_material
     restart: unless-stopped
     depends_on:
       - "transmission"
       - "ytdl_material"
-
 
   ytdl_material:
     environment:
