@@ -1,0 +1,1 @@
+CREATE RETENTION POLICY "default_retention_policy" ON "db0" DURATION 2w REPLICATION 1 DEFAULT;
