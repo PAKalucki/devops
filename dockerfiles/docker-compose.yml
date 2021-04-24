@@ -87,18 +87,21 @@ services:
       - "nordvpn:transmission"
       - portainer
     restart: unless-stopped
+    depends_on:
+      - "transmission"
+      - "ytdl_material"
 
 
   ytdl_material:
-      environment:
-          ALLOW_CONFIG_MUTATIONS: 'true'
-      restart: always
-      volumes:
-          - /mnt/natec/public/youtube/appdata:/app/appdata
-          - /mnt/natec/public/youtube/audio:/app/audio
-          - /mnt/natec/public/youtube/video:/app/video
-          - /mnt/natec/public/youtube/subscriptions:/app/subscriptions
-          - /mnt/natec/public/youtube/users:/app/users
-      ports:
-          - "8998:17442"
-      image: tzahi12345/youtubedl-material:nightly
+    environment:
+        ALLOW_CONFIG_MUTATIONS: 'true'
+    restart: always
+    volumes:
+        - /mnt/natec/public/youtube/appdata:/app/appdata
+        - /mnt/natec/public/youtube/audio:/app/audio
+        - /mnt/natec/public/youtube/video:/app/video
+        - /mnt/natec/public/youtube/subscriptions:/app/subscriptions
+        - /mnt/natec/public/youtube/users:/app/users
+    ports:
+        - "8998:17442"
+    image: tzahi12345/youtubedl-material:nightly
