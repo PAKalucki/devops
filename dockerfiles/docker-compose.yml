@@ -86,13 +86,13 @@ services:
     links:
       - "nordvpn:transmission"
       # - portainer
-      - ytdl_material
+      - youtube
     restart: unless-stopped
     depends_on:
       - "transmission"
-      - "ytdl_material"
+      - "youtube"
 
-  ytdl_material:
+  youtube:
     environment:
         ALLOW_CONFIG_MUTATIONS: 'true'
     restart: always
