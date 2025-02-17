@@ -1,0 +1,26 @@
+version: '3.3'
+services:
+    transmission-openvpn:
+        cap_add:
+            - NET_ADMIN
+        volumes:
+            - '/mnt/c/workspace/torrent/data:/data'
+            - '/mnt/c/workspace/torrent/config:/config'
+        environment:
+            - OPENVPN_PROVIDER=NORDVPN
+            - NORDVPN_COUNTRY=BG
+            - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+            - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+            - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+            # - LOCAL_NETWORK=192.168.1.0/16
+        logging:
+            driver: json-file
+            options:
+                max-size: 10m
+        ports:
+            - '9091:9091'
+        image: haugene/transmission-openvpn
+        restart: unless-stopped
+        dns:
+          - 8.8.8.8
+          - 8.8.4.4
