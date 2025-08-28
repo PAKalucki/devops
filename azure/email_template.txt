@@ -1,0 +1,6 @@
+Hello,
+
+You have been granted access to {avd_name}.
+
+Regards,
+Cloud Team
