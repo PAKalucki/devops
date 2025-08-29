@@ -59,7 +59,7 @@ def _load_email_template() -> str:
         return handle.read()
 
 
-def send_email(user_email: str, avd_name: str) -> None:
+def send_email(user_email: str) -> None:
     """Send a notification email via Azure Communication Services."""
     endpoint = os.getenv("ACS_ENDPOINT")
     sender = os.getenv("ACS_SENDER_ADDRESS")
@@ -69,20 +69,21 @@ def send_email(user_email: str, avd_name: str) -> None:
     credential = DefaultAzureCredential()
     client = EmailClient(endpoint, credential)
 
-    content = _load_email_template().format(avd_name=avd_name)
+    content = _load_email_template()
     message = {
         "senderAddress": sender,
         "recipients": {"to": [{"address": user_email}]},
         "content": {
-            "subject": f"Access granted to {avd_name}",
+            "subject": "Access granted",
             "plainText": content,
         },
     }
 
     logging.info("Sending email to %s", user_email)
     try:
-        response = client.send(message)
-        logging.info("Email sent with message ID %s", response["messageId"])
+        poller = client.begin_send(message)
+        result = poller.result()
+        logging.info("Email sent with message ID %s", result["messageId"])
     except Exception as exc:  # pylint: disable=broad-except
         logging.error("Failed to send email: %s", exc)
         raise
@@ -92,19 +93,36 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Add user to EntraID group and send onboarding email",
     )
-    parser.add_argument("user_email", help="Email of the user to onboard")
-    parser.add_argument("group_name", help="Target EntraID group")
+    parser.add_argument("user_email", nargs="?", help="Email of the user to onboard")
+    parser.add_argument("group_name", nargs="?", help="Target EntraID group")
     parser.add_argument(
-        "avd_name", help="Name of the Azure Virtual Desktop instance"
+        "--file",
+        "-f",
+        dest="file",
+        help="File with 'user_email group_name' per line",
     )
 
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+    def process(email: str, group: str) -> None:
+        add_user_to_group(email, group)
+        send_email(email)
+
     try:
-        add_user_to_group(args.user_email, args.group_name)
-        send_email(args.user_email, args.avd_name)
+        if args.file:
+            with open(args.file, "r", encoding="utf-8") as handle:
+                for line in handle:
+                    parts = line.strip().split()
+                    if len(parts) != 2:
+                        logging.warning("Skipping malformed line: %s", line.strip())
+                        continue
+                    process(parts[0], parts[1])
+        else:
+            if not args.user_email or not args.group_name:
+                parser.error("user_email and group_name required unless --file is used")
+            process(args.user_email, args.group_name)
     except Exception as exc:  # pylint: disable=broad-except
         logging.error("Onboarding failed: %s", exc)
 
